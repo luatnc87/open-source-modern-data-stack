@@ -26,7 +26,7 @@ To follow along, you need to:
 # Using Docker Compose to bootstrap OSMDS
 This tutorial uses Docker Compose and a shell script to set up the required resources. Docker saves you from installing additional dependencies locall. You can quickly start and stop the instances.
 
-The shell script **setup.sh** provides two commands, *up* and *down*, to start and stop the instances. The compose files are stored in *seatunnel/docker-compose-seatunnel.yaml*, *doris/docker-compose-doris.yaml*, and *superset/docker-compose-superset.yaml*. You can go through these files and make any necessary customization, for example, changing the ports where the instances start or installing additional dependencies.
+The shell script **setup.sh** provides two commands, *up* and *down*, to start and stop the instances. The compose files are stored in *airbyte/docker-compose-airbyte.yaml*, *doris/docker-compose-doris.yaml*, and *superset/docker-compose-superset.yaml*. You can go through these files and make any necessary customization, for example, changing the ports where the instances start or installing additional dependencies.
 
 ## Setting up Airbyte, Doris, Superset with Docker Compose
 ### Setting up Airbyte
