@@ -32,6 +32,11 @@ The shell script **setup.sh** provides two commands, *up* and *down*, to start a
 ## Setting up Airbyte, Doris, Superset with Docker Compose
 ### Setting up Airbyte
 The script launches the Airbyte instance at *http://localhost:8000*. In this tutorial, you will use the File source to read a CSV file. Enter Covid 19 data as the source name, and select File as the source type. Make sure csv is chosen as the format and paste the following URL in the url field: *https://storage.googleapis.com/covid19-open-data/v2/latest/epidemiology.csv*. Finally, enter the name of the dataset you created in Doris.
+#### Configuring data source
+![airbyte_source_configuration.png](images%2Fairbyte_source_configuration.png)
+
+#### Configuring data destination
+
 
 ### Setting up Doris
 The script launches the Doris FE (front end) instance at *http://localhost:8030*. You can see the following screen, which indicates that the FE has start successfully.
