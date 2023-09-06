@@ -1,0 +1,47 @@
+version: "3"
+services:
+  fe:
+    image: apache/doris:2.0.0_alpha-fe-x86_64
+    hostname: fe
+    environment:
+      - FE_SERVERS=fe1:172.20.80.2:9010
+      - FE_ID=1
+    ports:
+      - 8030:8030 # HTTP port
+      - 9030:9030 # Query port
+      - 9010:9010 # MySQL port
+    volumes:
+      - /data/fe/doris-meta/:/opt/apache-doris/fe/doris-meta/
+      - /data/fe/log/:/opt/apache-doris/fe/log/
+    networks:
+      osmds_internal:
+        ipv4_address: 172.20.80.2
+    restart: always
+
+  be:
+    image: apache/doris:2.0.0_alpha-be-x86_64
+    hostname: be
+    environment:
+      - FE_SERVERS=fe1:172.20.80.2:9010
+      - BE_ADDR=172.20.80.3:9050
+    volumes:
+      - /data/be/storage/:/opt/apache-doris/be/storage/
+      - /data/be/script/:/docker-entrypoint-initdb.d/
+      - /data/be/conf:/opt/apache-doris/be/conf
+      - /data/be/log:/opt/apache-doris/be/log
+    ports:
+      - 8040:8040 # HTTP port
+      - 9050:9050 # BE port
+    depends_on:
+      - fe
+    networks:
+      osmds_internal:
+        ipv4_address: 172.20.80.3
+    restart: always
+networks:
+  osmds_internal:
+    name: osmds_internal
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.80.0/24
