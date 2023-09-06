@@ -35,11 +35,24 @@ The script launches the Airbyte instance at *http://localhost:8000*. In this tut
 
 *Note: Here we use the Doris built-in default user (airbyte) and default password (password) to log.*
 #### Configuring data source
+Enter *Covid 19 data* as source name and select **File** as the source type. Enter the file format and choose HTTPs (Public Web) as the Storage Provider. Finnaly, paste the url of the covid-19 data source. 
 <p align="center">
-    <img src="images/airbyte_source_configuration.png" width="800"/>
+    <img src="images/airbyte_source_configuration.png" width="600"/>
 </p>
-#### Configuring data destination
 
+#### Configuring data destination
+Choose the **Apache Doris** as data destination. Enter Apache Doris as the name of data destination. Then enter value for the Host, HttpPort, QueryPort, DatabaseName, UserName and Password as below:
+
+<p align="center">
+    <img src="images/airbyte_destination_configuration.png" width="650"/>
+</p>
+
+#### Configuring a connection
+Finally, you establish a connection between the data source and data destination created above.
+
+<p align="center">
+    <img src="images/airbyte_connection_configuration.png" width="1000"/>
+</p>
 
 ### Setting up Doris
 The script launches the Doris FE (front end) instance at *http://localhost:8030*. You can see the following screen, which indicates that the FE has start successfully.
@@ -56,6 +69,16 @@ Once the setup.sh command has completed, visit *http://localhost:8088* to access
 One the stack is ready and running. You can start using it to ingest and process your data.
 
 ## Sync data from CSV into Doris using Airbyte
+On the connection screen, you click on the **Sync now** button to start syncing data from online file into the Doris data warehouse. Depending on the size of the source, it might take a few minutes.
+![airbyte_sync_data.png](images%2Fairbyte_sync_data.png)
+
+Once finished, your Doris UI should show the following structure:
+<p align="center">
+    <img src="images/doris_dataset.png" width="300"/>
+</p>
+
+The **covid19_data** table contains the raw JSON emitted by Airbyte, which is then normalized to form the **final_covid19_data** table. We'll use dbt to transform data. You can take look at the Data preview tab to get an idea of the *final_covid19_data* table structure.
+![preview_covid19_data.png](images%2Fpreview_covid19_data.png)
 
 ## Do a simple transformation with the dbt
 
