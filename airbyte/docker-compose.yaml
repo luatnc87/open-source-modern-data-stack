@@ -32,7 +32,7 @@ services:
       - LOCAL_CONNECTOR_CATALOG_PATH=${LOCAL_CONNECTOR_CATALOG_PATH}
       - LOG_LEVEL=${LOG_LEVEL}
     networks:
-      - airbyte_internal
+      - osmds_internal
     depends_on:
       init:
         condition: service_completed_successfully
@@ -53,7 +53,7 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     networks:
-      - airbyte_internal
+      - osmds_internal
   worker:
     image: airbyte/worker:${VERSION}
     logging: *default-logging
@@ -128,7 +128,7 @@ services:
     ports:
       - "9000"
     networks:
-      - airbyte_internal
+      - osmds_internal
     depends_on:
       bootloader:
         condition: service_completed_successfully
@@ -185,7 +185,7 @@ services:
       - data:${CONFIG_ROOT}
       - ${LOCAL_ROOT}:${LOCAL_ROOT}
     networks:
-      - airbyte_internal
+      - osmds_internal
     depends_on:
       bootloader:
         condition: service_completed_successfully
@@ -200,7 +200,7 @@ services:
       - TRACKING_STRATEGY=${TRACKING_STRATEGY}
       - KEYCLOAK_INTERNAL_HOST=localhost # placeholder to ensure the webapp's nginx config is valid
     networks:
-      - airbyte_internal
+      - osmds_internal
     depends_on:
       bootloader:
         condition: service_completed_successfully
@@ -220,7 +220,7 @@ services:
     volumes:
       - ./temporal/dynamicconfig:/etc/temporal/config/dynamicconfig
     networks:
-      - airbyte_internal
+      - osmds_internal
   airbyte-cron:
     image: airbyte/cron:${VERSION}
     logging: *default-logging
@@ -249,7 +249,7 @@ services:
     volumes:
       - workspace:${WORKSPACE_ROOT}
     networks:
-      - airbyte_internal
+      - osmds_internal
     depends_on:
       bootloader:
         condition: service_completed_successfully
@@ -266,7 +266,7 @@ services:
       - INTERNAL_API_HOST=${INTERNAL_API_HOST}
       - AIRBYTE_API_HOST=${AIRBYTE_API_HOST}
     networks:
-      - airbyte_internal
+      - osmds_internal
     depends_on:
       bootloader:
         condition: service_completed_successfully
@@ -283,7 +283,7 @@ services:
       - DEPLOYMENT_MODE=${DEPLOYMENT_MODE}
       - PYTHON_VERSION=${PYTHON_VERSION}
     networks:
-      - airbyte_internal
+      - osmds_internal
     depends_on:
       bootloader:
         condition: service_completed_successfully
@@ -301,7 +301,7 @@ services:
       - BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD}
       - BASIC_AUTH_PROXY_TIMEOUT=${BASIC_AUTH_PROXY_TIMEOUT}
     networks:
-      - airbyte_internal
+      - osmds_internal
       - airbyte_public
     depends_on:
       - webapp
@@ -322,4 +322,5 @@ configs:
     file: ./flags.yml
 networks:
   airbyte_public:
-  airbyte_internal:
+  osmds_internal:
+    external: true
