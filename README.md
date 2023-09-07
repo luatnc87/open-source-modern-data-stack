@@ -33,7 +33,7 @@ The shell script **setup.sh** provides two commands, *up* and *down*, to start a
 ### Setting up Airbyte
 The script launches the Airbyte instance at *http://localhost:8000*. In this tutorial, you will use the File source to read a CSV file. Enter Covid 19 data as the source name, and select File as the source type. Make sure csv is chosen as the format and paste the following URL in the url field: *https://storage.googleapis.com/covid19-open-data/v2/latest/epidemiology.csv*. Finally, enter the name of the dataset you created in Doris.
 
-*Note: Here we use the Doris built-in default user (airbyte) and default password (password) to log.*
+> **NOTE:** Login to the Airbyte web UI by entering the default credentials found in .env file.
 #### Configuring data source
 Enter *Covid 19 data* as source name and select **File** as the source type. Enter the file format and choose HTTPs (Public Web) as the Storage Provider. Finnaly, paste the url of the covid-19 data source. 
 <p align="center">
@@ -57,7 +57,7 @@ Finally, you establish a connection between the data source and data destination
 ### Setting up Doris
 The script launches the Doris FE (front end) instance at *http://localhost:8030*. You can see the following screen, which indicates that the FE has start successfully.
 ![doris_fe_login.png](images%2Fdoris_fe_login.png)
-*Note: Here we use the Doris built-in default user (root) to log in with an empty password.*
+> **NOTE:** Here we use the Doris built-in default user (root) to log in with an empty password.
 
 
 ### Setting up Superset
@@ -65,30 +65,97 @@ Once the setup.sh command has completed, visit *http://localhost:8088* to access
 <p align="center">
     <img src="images/superset_doris_connection.png" width="600"/>
 </p>
+
 # Using the OSDMS
 One the stack is ready and running. You can start using it to ingest and process your data.
 
 ## Sync data from CSV into Doris using Airbyte
 On the connection screen, you click on the **Sync now** button to start syncing data from online file into the Doris data warehouse. Depending on the size of the source, it might take a few minutes.
+
 ![airbyte_sync_data.png](images%2Fairbyte_sync_data.png)
 
 Once finished, your Doris UI should show the following structure:
+
 <p align="center">
-    <img src="images/doris_dataset.png" width="300"/>
+    <img src="images/doris_dataset.png" width="250"/>
 </p>
 
 The **covid19_data** table contains the raw JSON emitted by Airbyte, which is then normalized to form the **final_covid19_data** table. We'll use dbt to transform data. You can take look at the Data preview tab to get an idea of the *final_covid19_data* table structure.
 ![preview_covid19_data.png](images%2Fpreview_covid19_data.png)
 
 ## Do a simple transformation with the dbt
+You can use dbt framework to develop transformations.
+```sql
+{{config(
+    materialized='table',
+    distributed_by = [],
+    properties= {"replication_allocation" : "tag.location.default: 1"}
+)}}
+
+with tmp_tbl as (
+    SELECT replace(_airbyte_data, '\\', '') _airbyte_data
+	FROM {{ source('doris_covid19_data', 'covid19_data') }}
+)
+
+SELECT
+    get_json_string(_airbyte_data, '$.key') `key`
+    , get_json_double(_airbyte_data, '$.total_tested') total_tested
+    , get_json_double(_airbyte_data, '$.new_recovered') new_recovered
+    , get_json_double(_airbyte_data, '$.new_deceased') new_deceased
+    , get_json_string(_airbyte_data, '$.date') `date`
+    , get_json_double(_airbyte_data, '$.total_confirmed') total_confirmed
+    , get_json_double(_airbyte_data, '$.new_tested') new_tested
+    , get_json_double(_airbyte_data, '$.total_recovered') total_recovered
+    , get_json_double(_airbyte_data, '$.new_confirmed') new_confirmed
+    , get_json_double(_airbyte_data, '$.total_deceased') total_deceased
+FROM tmp_tbl
+```
+Create a aggregated table to get latest covid report by days.
+```sql
+{{config(
+    materialized='table',
+    properties= {"replication_allocation" : "tag.location.default: 1"}
+)}}
+
+SELECT
+    `date`,
+    sum(total_tested) total_tested,
+    sum(new_recovered) new_recovered,
+    sum(new_deceased) new_deceased,
+    sum(total_confirmed) total_confirmed,
+    sum(new_tested) new_tested,
+    sum(total_recovered) total_recovered,
+    sum(new_confirmed) new_confirmed,
+    sum(total_deceased) total_deceased
+FROM {{ ref('stg_covid19_data') }}
+GROUP BY 1
+
+```
 
 ## Visualize data on dashboard with Superset
+Once Airbyte has loaded data into Doris, you can add it as a dataset in Superset and start visualizing data. First, navigate to Dataset page. Select the Doris connection that you created earlier as database, *demo* as the schema and *agg_covid19_data* as the table schema.
+
+Now you can create a new chart using the data stored in the Doris. Navigate to *Charts* tab, choose *agg_covid19_data* as dataset and choose a chart type, example bar chart. On the next page, you can add metrics you want to visualize. Example, I choose simply the sum of *new_recovered*, organized by the key.
+
+
+![superset_chart.png](images%2Fsuperset_chart.png)
 
 ## Cleaning up
+You can clean up the resources by running the following command.
+
+```bash
+./setup.sh down
+```
 
 # Conclusion
+By adopting an open-source modern data stack, you can achieve remarkable improvements in the efficiency of your data pipeline, resulting in significant time savings by reducing manual labor. Furthermore, this approach can lead to substantial cost reductions. When you choose to employ self-hosted open-source solutions such as Airbyte, Doris, dbt, and Superset, you ensure that these vital components operate within your own infrastructure, offering you greater control and security.
+
+The advantage of these projects lies in their provision of Docker Compose files, which simplifies the local setup process considerably. This means that you can easily establish and manage these components on your local environment with minimal effort.
+
+However, if you're aiming to deploy a scalable modern data stack to a cloud environment, you have the option to leverage Terraform and Kubernetes, two powerful tools that automate the deployment process. This automation not only streamlines the setup but also enables you to efficiently manage and scale your data stack in the cloud environment, providing you with flexibility and ease of use.
+## Supporting Links
+* <a href="https://airbyte.com/tutorials/modern-data-stack-docker" target="_blank">Set up a modern data stack with Docker</a>
 
 # About the author
 
-# Thanks
 
