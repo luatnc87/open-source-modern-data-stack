@@ -4,6 +4,7 @@ This repo demonstrate a comprehensive modern data stack using popular open-sourc
 Welcome to Open Source Modern Data Stack (OSMDS). This repo showcases a complete modern data stack using popular open-source tools.
 
 ![osmds_architeture.png](images%2Fosmds_architeture.png)
+
 # Components of the OSMDS
 Before we set up project, let's briefly look at each tools used in this example of the open source modern data stack to make sure you understand their components.
 
