@@ -1,0 +1,2 @@
+dbt-core==1.5.0
+dbt-doris==0.3.2

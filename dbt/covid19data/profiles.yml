@@ -1,0 +1,11 @@
+covid19data:
+  outputs:
+    dev:
+      host: 172.20.80.2
+      password: ''
+      port: 9030
+      schema: demo
+      threads: 1
+      type: doris
+      username: "root"
+  target: dev

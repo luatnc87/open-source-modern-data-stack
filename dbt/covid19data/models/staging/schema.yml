@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: stg_covid19_data
+    description: "Covid-19 data that is parsered and cleaned from raw table"
+    columns:
+      - name: key
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: total_tested
+      - name: new_recovered
+      - name: new_deceased
+      - name: date
+      - name: total_confirmed
+      - name: new_tested
+      - name: total_recovered
+      - name: new_confirmed
+      - name: total_deceased
