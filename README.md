@@ -64,7 +64,7 @@ The script launches the Doris FE (front end) instance at *http://localhost:8030*
 ### Setting up Superset
 Once the setup.sh command has completed, visit *http://localhost:8088* to access the Superset UI. Enter admin as username and password. Choose MySQL (use to connect to Doris DWH) from the supported databases drop-down. Then upload the service account keyfile.
 <p align="center">
-    <img src="images/superset_doris_connection.png" width="600"/>
+    <img src="images/superset_doris_connection.png" width="500"/>
 </p>
 
 # Using the OSDMS
