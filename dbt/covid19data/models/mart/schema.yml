@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: agg_covid19_data
+    description: ""
+    columns:
+      - name: date
+      - name: total_tested
+      - name: new_recovered
+      - name: new_deceased
+      - name: date
+      - name: total_confirmed
+      - name: new_tested
+      - name: total_recovered
+      - name: new_confirmed
+      - name: total_deceased
